@@ -6,7 +6,7 @@ from nose.plugins.attrib import attr
 
 from fs.test import FSTestCases
 
-from fs_s3fs import S3FS
+from cvec_fs_s3fs import S3FS
 
 import boto3
 

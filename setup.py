@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-with open('fs_s3fs/_version.py') as f:
+with open('cvec_fs_s3fs/_version.py') as f:
     exec(f.read())
 
 CLASSIFIERS = [
@@ -29,7 +29,7 @@ REQUIREMENTS = [
 ]
 
 setup(
-    name='fs-s3fs',
+    name='cvec-fs-s3fs',
     author="Will McGugan",
     author_email="willmcgugan@gmail.com",
     classifiers=CLASSIFIERS,
@@ -41,9 +41,9 @@ setup(
     keywords=['pyfilesystem', 'Amazon', 's3'],
     platforms=['any'],
     test_suite="nose.collector",
-    url="https://github.com/PyFilesystem/s3fs",
+    url="https://github.com/commodityvectors/s3fs",
     version=__version__,
     entry_points={'fs.opener': [
-         's3 = fs_s3fs.opener:S3FSOpener',
+         's3 = cvec_fs_s3fs.opener:S3FSOpener',
     ]},
 )

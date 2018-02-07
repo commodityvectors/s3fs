@@ -8,12 +8,12 @@ release: readme
 
 .PHONY: test
 test:
-	nosetests --with-coverage --cover-erase --logging-level=ERROR --cover-package=fs_s3fs -a "!slow" fs_s3fs/tests
+	nosetests --with-coverage --cover-erase --logging-level=ERROR --cover-package=cvec_fs_s3fs -a "!slow" cvec_fs_s3fs/tests
 	rm .coverage
 
 .PHONY: slowtest
 slowtest:
-	nosetests --with-coverage --cover-erase --logging-level=ERROR --cover-package=fs_s3fs fs_s3fs/tests
+	nosetests --with-coverage --cover-erase --logging-level=ERROR --cover-package=cvec_fs_s3fs cvec_fs_s3fs/tests
 	rm .coverage
 
 .PHONY: testall
@@ -24,3 +24,7 @@ testall:
 docs:
 	cd docs && make html
 	python -c "import os, webbrowser; webbrowser.open('file://' + os.path.abspath('./docs/_build/html/index.html'))"
+
+.PHONY: publish
+publish:
+	python setup.py sdist upload -r local
