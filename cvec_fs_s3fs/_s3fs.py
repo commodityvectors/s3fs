@@ -287,6 +287,7 @@ class S3FS(FS):
         self.delimiter = delimiter
         self.strict = strict
         self._tlocal = threading.local()
+
         super(S3FS, self).__init__()
 
     def __repr__(self):
@@ -341,9 +342,20 @@ class S3FS(FS):
             return obj
 
     @property
+    def session(self):
+        if not hasattr(self._tlocal, 's3'):
+            self._tlocal.session = boto3.session.Session(
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
+                aws_session_token=self.aws_session_token,
+                region_name=self.region
+            )
+        return self._tlocal.session
+
+    @property
     def s3(self):
         if not hasattr(self._tlocal, 's3'):
-            self._tlocal.s3 = boto3.resource(
+            self._tlocal.s3 = self.session.resource(
                 's3',
                 region_name=self.region,
                 aws_access_key_id=self.aws_access_key_id,
@@ -356,7 +368,7 @@ class S3FS(FS):
     @property
     def client(self):
         if not hasattr(self._tlocal, 'client'):
-            self._tlocal.client = boto3.client(
+            self._tlocal.client = self.session.client(
                 's3',
                 region_name=self.region,
                 aws_access_key_id=self.aws_access_key_id,
