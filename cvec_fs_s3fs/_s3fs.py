@@ -641,7 +641,31 @@ class S3FS(FS):
         _path = self.validatepath(path)
         if _path == '/':
             raise errors.RemoveRootError()
-        info = self.getinfo(_path)
+        try:
+            """Story time: If the S3 key has been created with an empty
+            object in the prefix, then this call will succeed. However,
+            if the prefix does not contain the hidden empty object then
+            this will fail once all the files have been deleted since
+            the key prefix will cease to exist."""
+            info = self.getinfo(_path)
+        except errors.ResourceNotFound:
+            """So let's try one catch here, check if the directory no
+            longer exists, and properly throw if it still does (since
+            something very weird has gone wrong then)"""
+            try:
+                self.listdir(_path)
+            except errors.ResourceNotFound:
+                """We get here when the prefix key has been automatically
+                dropped due to the *absence* of the magic hidden object"""
+                return
+            else:
+                """We get here when the magic object initially doesn't exist 
+                and there is no actual content in the directory BUT THEN there
+                is something in there! Race conditions abound!"""
+                raise errors.DirectoryNotEmpty(path)
+        """After here, we have successfully bailed out after realizing the magical 
+        hidden object keeping the key alive doesn't exist. So now we need to actually
+        delete that magical hidden object given we're sure it exists."""
         if not info.is_dir:
             raise errors.DirectoryExpected(path)
         if not self.isempty(path):
